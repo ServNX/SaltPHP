@@ -366,7 +366,7 @@ class SaltConfig implements SaltConfigInterface
 
         foreach ($files as $file) {
             if (is_file("$directory/$file")) {
-                $conf = require $directory . "/SaltConfig.php";
+                $conf = require $directory . "/$file";
                 $this->values[basename($file, '.php')] = $conf;
             }
         }
@@ -380,7 +380,7 @@ class SaltConfig implements SaltConfigInterface
 
         foreach ($files as $file) {
             if (is_file("$directory/$file")) {
-                $conf = require $directory . "/SaltConfig.php";
+                $conf = require $directory . "/$file";
                 $this->values[basename($file, '.php')] = $conf;
             }
         }
