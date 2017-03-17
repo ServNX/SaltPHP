@@ -31,9 +31,6 @@ class SaltTools
 
     public function getServices($target, $search = '')
     {
-        $test = Yaml::parse($this->salt->execute(hostname(), 'service.get_all', [], [], '--out=yaml'));
-        dd($test);
-
         $results = trim(shell_exec("salt '$target' service.get_all | grep \"$search\""));
 
         if (str_contains($results, "\n")) {
