@@ -1,4 +1,6 @@
 {
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "name": "servnx/saltphp",
     "description": "SaltStack PHP Package",
     "type": "project",
