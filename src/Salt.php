@@ -214,7 +214,7 @@ class Salt implements SaltInterface
      * @param $key
      * @return mixed
      */
-    public function getResults($key = null)
+    public function getResults($key)
     {
         $values = [];
 
