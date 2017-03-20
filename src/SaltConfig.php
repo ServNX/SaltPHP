@@ -6,7 +6,6 @@ use RecursiveArrayIterator;
 use RecursiveIteratorIterator;
 use Salt\Contracts\SaltConfigInterface;
 use Salt\Policies\AddPillarPolicy;
-use Salt\Utilities\SaltTools;
 use Symfony\Component\Yaml\Yaml;
 
 class SaltConfig implements SaltConfigInterface

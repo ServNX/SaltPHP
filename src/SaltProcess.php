@@ -2,11 +2,10 @@
 
 namespace Salt\Utilities;
 
-use Symfony\Component\Intl\Exception\NotImplementedException;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process as SymfonyProcess;
 
-class Process
+class SaltProcess
 {
     /**
      * @var string $failureLevel

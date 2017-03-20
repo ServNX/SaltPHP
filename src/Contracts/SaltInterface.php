@@ -10,11 +10,6 @@ interface SaltInterface
     public function config();
 
     /**
-     * @return mixed
-     */
-    public function tools();
-
-    /**
      * Executes the given module with given params and given data
      *
      * @param string $target
@@ -23,7 +18,14 @@ interface SaltInterface
      * @param array $data
      * @return array|mixed
      */
-    public function execute($target, $module, $args = [], $data = []);
+    public function execute($target, $module, $args = [], $data = [], $out = 'json', $append = '');
+
+    /**
+     * @param $cmd
+     * @param string $target
+     * @return mixed
+     */
+    public function cmd($cmd, $target = '*');
 
     /**
      * Pings the target
@@ -32,18 +34,6 @@ interface SaltInterface
      * @return mixed
      */
     public function ping($target);
-
-    /**
-     * @param $target
-     * @return mixed
-     */
-    public function osFamily($target);
-
-    /**
-     * @param $target
-     * @return mixed
-     */
-    public function os($target);
 
     /**
      * @param string $list
@@ -58,12 +48,12 @@ interface SaltInterface
     public function acceptMinionKey($target);
 
     /**
-     * Returns the given key from the results.
+     * Returns an array of values of the given key from the stored results.
      *
      * @param $key
      * @return mixed
      */
-    public function getResults($key);
+    public function getKeyValueFromResults($key);
 
     /**
      * Resets properties

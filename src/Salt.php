@@ -4,14 +4,12 @@ namespace Salt;
 
 use Salt\Contracts\SaltInterface;
 
-use Salt\Utilities\Process;
-use Salt\Utilities\SaltTools;
+use Salt\Utilities\SaltProcess;
 
 class Salt implements SaltInterface
 {
 
     // todo: this class needs some abstraction
-    // todo: maybe this class is strictly a gateway class ?
 
     /**
      * Container for the results
@@ -19,13 +17,6 @@ class Salt implements SaltInterface
      * @var array $results
      */
     protected $results;
-
-    /**
-     * The Target
-     *
-     * @var string $target
-     */
-    protected $target;
 
     /**
      * The formatted pillar data to be sent
@@ -40,11 +31,6 @@ class Salt implements SaltInterface
     private $config;
 
     /**
-     * @var SaltTools $tools
-     */
-    private $tools;
-
-    /**
      * Salt constructor.
      */
     public function __construct(SaltConfig $config = null)
@@ -54,18 +40,11 @@ class Salt implements SaltInterface
         if ($config == null) {
             $this->config = new SaltConfig();
         }
-
-        $this->tools = new SaltTools($this);
     }
 
     public function config()
     {
         return $this->config;
-    }
-
-    public function tools()
-    {
-        return $this->tools;
     }
 
     /**
@@ -83,7 +62,7 @@ class Salt implements SaltInterface
     {
         $this->target = $target;
 
-        $cmd = "salt '$target' $module";
+        $cmd = "$module";
 
         if (!empty($args)) {
             $args = implode(' ', $args);
@@ -101,7 +80,7 @@ class Salt implements SaltInterface
             $cmd .= " $append";
         }
 
-        $output = $this->cmd($cmd);
+        $output = $this->cmd($cmd, $target);
 
         $this->results = json_decode($output, true);
 
@@ -119,9 +98,9 @@ class Salt implements SaltInterface
      * @param $cmd
      * @return string
      */
-    protected function cmd($cmd)
+    public function cmd($cmd, $target = '*')
     {
-        return (new Process())->execute($cmd);
+        return (new SaltProcess())->execute("salt '$target' " . $cmd);
     }
 
     /**
@@ -163,20 +142,6 @@ class Salt implements SaltInterface
     }
 
     // todo: move into SaltTools
-    public function osFamily($target)
-    {
-        $this->execute($target, 'grains.item', ['os_family']);
-        return isset($this->results[$target]) ? $this->results[$target]['os_family'] : '';
-    }
-
-    // todo: move into SaltTools
-    public function os($target)
-    {
-        $this->execute($target, 'grains.item', ['os']);
-        return isset($this->results[$target]) ? $this->results[$target]['os'] : '';
-    }
-
-    // todo: move into SaltTools
     public function getKeys($list = 'all')
     {
         $process = trim(shell_exec("salt-key -L --out=json"));
@@ -202,23 +167,23 @@ class Salt implements SaltInterface
         $minions_pre = $this->getKeys('minions_pre');
 
         if (in_array($target, $minions_pre)) {
-            (new Process())->execute("salt-key -y -a '$target'");
+            (new SaltProcess())->execute("salt-key -y -a '$target'");
         }
 
         return false;
     }
 
     /**
-     * Returns the given key from the results.
+     * Returns an array of values of the given key from the stored results.
      *
      * @param $key
      * @return mixed
      */
-    public function getResults($key)
+    public function getKeyValueFromResults($key, $target = '*')
     {
         $values = [];
 
-        if ($this->target == '*') {
+        if ($target == '*') {
             foreach ($this->results as $target) {
                 if (is_array($target)) {
                     foreach ($target as $command => $value) {
@@ -229,8 +194,8 @@ class Salt implements SaltInterface
                 }
             }
         } else {
-            if (is_array($this->results[$this->target])) {
-                foreach ($this->results[$this->target] as $command) {
+            if (is_array($this->results[$target])) {
+                foreach ($this->results[$target] as $command) {
                     if (is_array($command)) {
                         array_push($values, $command[$key]);
                     } else {
@@ -238,7 +203,7 @@ class Salt implements SaltInterface
                     }
                 }
             } else {
-                array_push($values, $this->results[$this->target]);
+                array_push($values, $this->results[$target]);
             }
         }
 
