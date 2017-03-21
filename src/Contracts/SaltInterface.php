@@ -12,13 +12,13 @@ interface SaltInterface
     /**
      * Executes the given module with given params and given data
      *
-     * @param string $target
      * @param string $module
+     * @param string $target
      * @param array $args
      * @param array $data
      * @return array|mixed
      */
-    public function execute($target, $module, $args = [], $data = [], $out = 'json', $append = '');
+    public function execute($module, $target = '*', $args = [], $data = [], $out = 'json', $append = '');
 
     /**
      * @param $cmd
@@ -48,12 +48,14 @@ interface SaltInterface
     public function acceptMinionKey($target);
 
     /**
-     * Returns an array of values of the given key from the stored results.
+     * Returns an array of values of the given searchkey from the stored results.
      *
-     * @param $key
-     * @return mixed
+     * @param $searchkey
+     * @return array
      */
-    public function getKeyValueFromResults($key);
+    public function searchResults($searchkey);
+
+    public function getResults();
 
     /**
      * Resets properties

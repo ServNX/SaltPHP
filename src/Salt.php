@@ -58,7 +58,7 @@ class Salt implements SaltInterface
      * @param string $append
      * @return array|mixed
      */
-    public function execute($target, $module, $args = [], $data = [], $out = 'json', $append = '')
+    public function execute($module, $target = '*', $args = [], $data = [], $out = 'json', $append = '')
     {
         $this->target = $target;
 
@@ -129,13 +129,30 @@ class Salt implements SaltInterface
     }
 
     /**
+     * @return array
+     */
+    public function getResults(): array
+    {
+        return $this->results;
+    }
+
+    /**
+     * Resets properties
+     */
+    public function clean()
+    {
+        $this->data = '';
+        $this->target = null;
+    }
+
+    /**
      * todo: move into SaltTools
      * Pings the target
      *
      * @param $target
      * @return mixed
      */
-    public function ping($target)
+    public function ping($target = '*')
     {
         $this->execute($target, 'test.ping', []);
         return isset($this->results[$target]) ? $this->results[$target] : $this->results;
@@ -174,39 +191,26 @@ class Salt implements SaltInterface
     }
 
     /**
-     * Returns an array of values of the given key from the stored results.
+     * Returns an array of values of the given searchkey from the stored results.
      *
      * @param $key
-     * @return mixed
+     * @return array
      */
-    public function getKeyValueFromResults($key, $target = '*')
+    public function searchResults($searchkey)
     {
         $values = [];
 
-        if ($target == '*') {
-            foreach ($this->results as $target) {
-                if (is_array($target)) {
-                    foreach ($target as $command => $value) {
-                        array_push($values, $value[$key]);
-                    }
-                } else {
-                    array_push($values, $target);
-                }
-            }
-        } else {
-            if (is_array($this->results[$target])) {
-                foreach ($this->results[$target] as $command) {
-                    if (is_array($command)) {
-                        array_push($values, $command[$key]);
-                    } else {
-                        array_push($values, $command);
-                    }
-                }
+        foreach ($this->results as $results) {
+            if (is_array($results)) {
+                // $results can be an array of minion id's
+                // each minion id will likely have an array value
+                // we normally want to retrieve a value of a key in that array
+                array_push($values, array_find($searchkey, $results)['value']);
             } else {
-                array_push($values, $this->results[$target]);
+                // otherwise just push the results to values array ?
+                array_push($values, $results);
             }
         }
-
 
         return $values;
     }
@@ -214,15 +218,5 @@ class Salt implements SaltInterface
     protected function validateResults()
     {
 
-    }
-
-
-    /**
-     * Resets properties
-     */
-    public function clean()
-    {
-        $this->data = '';
-        $this->target = null;
     }
 }

@@ -2,20 +2,12 @@
 
 namespace Salt\Modules;
 
-use Salt\Contracts\SaltInterface;
-
-class SaltUtil
+class SaltUtil extends BaseModule
 {
-    private $salt;
-
-    public function __construct(SaltInterface $salt)
-    {
-        $this->salt = $salt;
-    }
-
     public function refresh_pillars($target = '*')
     {
-        return $this->salt->execute($target, 'saltutil.refresh_pillar');
+        $this->salt->execute('saltutil.refresh_pillar', $target);
+        return $this->getResults();
     }
 
 }

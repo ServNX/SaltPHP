@@ -2,29 +2,16 @@
 
 namespace Salt\Modules;
 
-use Salt\Contracts\SaltInterface;
-
-class Service
+class Service extends BaseModule
 {
-    /**
-     * @var SaltInterface
-     */
-    private $salt;
-
-    public function __construct(SaltInterface $salt)
-    {
-        $this->salt = $salt;
-    }
-
     public function all($target = '*')
     {
         return $this->parse($this->salt->cmd("service.get_all", $target));
     }
 
-    public function get($search, $target = '*')
+    public function get($searchkey, $target = '*')
     {
-        //dd($this->salt->cmd("service.get_all | grep \"$search\"", $target));
-        return $this->parse($this->salt->cmd("service.get_all | grep \"$search\"", $target));
+        return $this->parse($this->salt->cmd("service.get_all | grep \"$searchkey\"", $target));
     }
 
     private function parse($results)
