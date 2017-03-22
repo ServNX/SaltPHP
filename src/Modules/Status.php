@@ -19,6 +19,13 @@ class Status extends BaseModule
         return $this->checkArgumentsAndGetResults($target, $searchkey);
     }
 
+    public function meminfo($target = '*', $searchkey = null)
+    {
+        $this->salt->execute('status.meminfo', $target);
+
+        return $this->checkArgumentsAndGetResults($target, $searchkey);
+    }
+
     /**
      * @param $target
      * @param $searchkey
